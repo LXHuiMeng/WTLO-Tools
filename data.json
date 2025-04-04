@@ -11,5 +11,10 @@
         { "item": "硫", "price": 15, "weight": 0.15 },
         { "item": "铅", "price": 1.5, "weight": 0.05 },
         { "item": "太阳蜘蛛肉", "price": 308, "weight": 0.62 }
+    ],
+    "火蜘蛛": [
+        { "item": "火蜘蛛腺", "price": 1922, "weight": 0.156 },
+        { "item": "火蜘蛛生物材料", "price": 329, "weight": 0.125 },
+        { "item": "火蜘蛛胃", "price": 1350, "weight": 0.6 }
     ]
 }
