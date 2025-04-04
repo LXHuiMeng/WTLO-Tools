@@ -188,9 +188,6 @@
 </head>
 <body>
     <h1>怪物掉落表系统</h1>
-    <div style="text-align: center; margin-bottom: 15px; color: #666;">
-        数据最后更新于：<span id="updateTime"></span>
-    </div>
     
     <div class="data-management">
         <div class="file-input">
@@ -226,80 +223,40 @@
 
     <script>
         // 默认数据
-        const DEFAULT_DATA = {
-            "太阳蜘蛛": [
-                { "item": "太阳蜘蛛腺", "price": 1922, "weight": 0.156 },
-                { "item": "太阳蜘蛛生物材料", "price": 329, "weight": 0.125 },
-                { "item": "太阳蜘蛛胃", "price": 1350, "weight": 0.6 },
-                { "item": "太阳蜘蛛爪", "price": 295, "weight": 0.74 },
-                { "item": "聚合物", "price": 25, "weight": 0.075 },
-                { "item": "太阳蜘蛛腿", "price": 165, "weight": 0.6 },
-                { "item": "贵金属", "price": 100, "weight": 0.5 },
-                { "item": "贵金属", "price": 50, "weight": 0.3 },
-                { "item": "硫", "price": 15, "weight": 0.15 },
-                { "item": "铅", "price": 1.5, "weight": 0.05 },
-                { "item": "太阳蜘蛛肉", "price": 308, "weight": 0.62 }
-            ]
-        };
-
+        const DEFAULT_DATA = {}; // 清空默认数据
         // 系统状态
         const COLOR_PALETTE = ['#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFDFBA', '#D0BAFF'];
-        let lootData = {};
         let monsterColors = {};
         let currentData = [];
         let sortState = { column: null, order: 0 };
         let maxValues = { price: 0, weight: 0, ppk: 0 };
         let itemSourceMap = {};
+        let lootData = {};
+
 
         // 初始化
         async function init() {
-            await loadSavedData(); // 等待数据加载
+            await loadExternalData(); // 新增此行
+            loadSavedData();
             setupEventListeners();
             initializeData();
             updateView();
         }
-
-        async function loadSavedData() {
-            // 方案1：使用GitHub Pages托管（推荐）
-            const GITHUB_PAGES_URL = "https://github.com/LXHuiMeng/WTLO-Tools/blob/ea99b5e810149536b9639300b950ecdb04dbc279/data.json";
-            
-            // 方案2：使用CORS代理服务（备选）
-            const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
-            const RAW_GITHUB_URL = "https://github.com/LXHuiMeng/WTLO-Tools/blob/ea99b5e810149536b9639300b950ecdb04dbc279/data.json";
-
+        
+        // 新增数据加载函数
+        async function loadExternalData() {
             try {
-                // 优先尝试GitHub Pages
-                let response = await fetch(GITHUB_PAGES_URL, {
-                    cache: "no-cache" // 跳过浏览器缓存
-                });
-                
-                // 如果失败尝试代理方案
-                if (!response.ok) {
-                    response = await fetch(PROXY_URL + RAW_GITHUB_URL, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest' // 某些代理需要
-                        }
-                    });
-                }
-
-                // 处理响应
-                if (response.ok) {
-                    lootData = await response.json();
-                    localStorage.setItem('lootData', JSON.stringify(lootData));
-                    console.log("远程数据加载成功");
-                    
-                    // 显示更新时间
-                    const lastModified = response.headers.get('last-modified') || new Date().toUTCString();
-                    document.getElementById('updateTime').textContent = 
-                        new Date(lastModified).toLocaleString();
-                } else {
-                    throw new Error('远程数据加载失败');
-                }
+                const response = await fetch('data.json');
+                lootData = await response.json();
             } catch (error) {
-                console.warn('使用本地缓存数据:', error);
-                const savedData = localStorage.getItem('lootData');
-                lootData = savedData ? JSON.parse(savedData) : {...DEFAULT_DATA};
+                console.error('加载data.json失败，使用默认数据');
+                lootData = { /* 可保留少量默认数据 */ };
             }
+        }
+
+        function loadSavedData() {
+            const savedData = localStorage.getItem('lootData');
+            lootData = savedData ? JSON.parse(savedData) : {...DEFAULT_DATA};
         }
 
         function initializeData() {
@@ -531,7 +488,7 @@
             currentData.forEach(item => {
                 const matchItem = item.item.toLowerCase().includes(query);
                 const matchMonster = Array.from(itemSourceMap[item.item] || [])
-                    。some(m => m.toLowerCase().includes(query));
+                    .some(m => m.toLowerCase().includes(query));
                 item.display = matchItem || matchMonster;
             });
             updateView();
@@ -582,15 +539,15 @@
 
                     row.innerHTML = `
                     <td>
-                        <div>${item。item}</div>
-                        <div>${Array。from(item。monsters)
-                            。map(monster => `<span class="source-tag" style="background:${monsterColors[monster]}">${monster}</span>`)
-                            。join('')}
+                        <div>${item.item}</div>
+                        <div>${Array.from(item.monsters)
+                            .map(monster => `<span class="source-tag" style="background:${monsterColors[monster]}">${monster}</span>`)
+                            .join('')}
                         </div>
                     </td>
                     <td>
                         <div class="progress-container">
-                            ${sortState。column === 'price' ? 
+                            ${sortState.column === 'price' ? 
                                 `<div class="progress-bar" style="width:${(item.price/maxValues.price*100).toFixed(1)}%"></div>` 
                                 : ''}
                             <span class="progress-text">${item.price}</span>
