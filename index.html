@@ -1,557 +1,190 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>本地怪物掉落表系统</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Nexus | 开发者门户</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;500&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f8f9fa;
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: var(--table-bg);
-            border-radius: 12px; /* 新增圆角 */
-            overflow: hidden; /* 隐藏边角 */
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-        }
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-            position: relative;
-            text-align: center;
-        }
-        th {
-            background-color: #3498db;
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        th:hover {
-            background-color: #2980b9;
-        }
-        tr:hover {
-            background-color: #f6f6f6;
-        }
-        .source-tag {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.75rem;
-            margin: 0.25rem 0.5rem 0.25rem 0;
-            border-radius: 999px;
-            font-size: 0.85em;
-            font-weight: 500;
-            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
-            transition: transform 0.1s ease;
+        :root {
+            --neon-blue: #00f3ff;
+            --matrix-green: #0f0;
+            --cyber-purple: #bc13fe;
+            --dark-bg: #0a0a0a;
         }
 
-        .source-tag:hover {
-            transform: translateY(-1px);
-        }
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        #searchInput {
-            flex: 1;
-            padding: 10px;
-            max-width: 400px;
-            border: 2px solid #3498db;
-            border-radius: 4px;
-            outline: none;
-        }
-        button {
-            padding: 10px 20px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        button:hover {
-            background: #2980b9;
-            transform: translateY(-1px);
-        }
-        .sort-indicator {
-            margin-left: 5px;
-            font-size: 0.8em;
-        }
-        .tooltip {
-            position: absolute;
-            background: white;
-            border: 1px solid #ddd;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 100;
-            max-width: 300px;
-            display: none;
-        }
-        .file-input {
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--dark-bg);
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-blue);
+            min-height: 100vh;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
         }
-        .file-input input[type="file"] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
+
+        .cyber-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
         }
-        .autocomplete-items {
-            position: absolute;
-            background: white;
-            border: 1px solid #ddd;
-            max-height: 200px;
-            overflow-y: auto;
-            width: 400px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            z-index: 100;
-            display: none;
-        }
-        .autocomplete-item {
-            padding: 10px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .autocomplete-item:hover {
-            background: #f5f5f5;
-        }
-        .progress-container {
+
+        .header {
             position: relative;
-            display: inline-block;
-            width: 100%;
+            padding: 2rem 0;
+            border-bottom: 3px solid var(--neon-blue);
+            margin-bottom: 3rem;
+            animation: glow 2s ease-in-out infinite alternate;
         }
-        .progress-bar {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            background: rgba(52, 152, 219, 0.2);
-            z-index: 0;
-            transition: width 0.3s;
-        }
-        .progress-text {
-            position: relative;
-            z-index: 1;
-        }
-        @keyframes rowFlipIn {
+
+        @keyframes glow {
             from {
-                opacity: 0;
-                transform: rotateX(-90deg);
+                text-shadow: 0 0 10px var(--neon-blue);
             }
             to {
-                opacity: 1;
-                transform: rotateX(0deg);
+                text-shadow: 0 0 20px var(--neon-blue), 0 0 30px var(--cyber-purple);
             }
         }
-        .merchant-select {
-            padding: 10px;
-            border: 2px solid #3498db;
-            border-radius: 4px;
-            background: white;
-            color: #2c3e50;
-            margin-left: 10px;
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
         }
-        tr {
-            transition: all 0.3s ease;
-            transform-style: preserve-3d;
+
+        .cyber-card {
             position: relative;
-        }
-        tbody tr:hover {
-            transform: perspective(1000px) rotateX(5deg) translateZ(15px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            z-index: 10;
-        }
-
-        /* 表头保持原有效果 */
-        th:hover {
-            background-color: #2980b9 !important;
-            transform: none !important;
-            box-shadow: none !important;
+            background: rgba(10, 10, 10, 0.9);
+            border: 2px solid var(--neon-blue);
+            padding: 2rem;
+            border-radius: 5px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
         }
 
-        .sorting-animation {
-            animation: rowFlipIn 0.5s ease-out;
+        .cyber-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 30px var(--neon-blue);
         }
-        
+
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent, 
+                var(--neon-blue),
+                transparent);
+            animation: animate 4s linear infinite;
+        }
+
+        @keyframes animate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .card-content {
+            position: relative;
+            background: var(--dark-bg);
+            padding: 1rem;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 0 0 1rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+
+        h2 {
+            color: var(--cyber-purple);
+            margin: 0 0 2rem;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            font-size: 1.2rem;
+            display: block;
+            padding: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--matrix-green);
+        }
+
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 10%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>怪物掉落表系统</h1>
+    <div class="scan-line"></div>
+    
+    <div class="cyber-container">
+        <header class="header">
+            <h1>导航</h1>
+            <h2>HuiMeng</h2>
+        </header>
 
-    <div class="controls">
-        <div style="position:relative;">
-            <input type="text" id="searchInput" placeholder="搜索怪物或物品..." autocomplete="off">
-            <div id="autocompleteList" class="autocomplete-items"></div>
-        </div>
-        <select id="merchantSelect" class="merchant-select" onchange="updatePrices()">
-            <option value="1.0">默认</option>
-            <option value="0.9">峡谷商人 (0.9x)</option>
-        </select>
-        <button onclick="searchData()">搜索</button>
-        <button onclick="resetView()">重置视图</button>
-    </div>
-
-    <table id="lootTable">
-        <thead>
-            <tr>
-                <th onclick="sortData('item')">掉落物品 <span class="sort-indicator">↕</span></th>
-                <th onclick="sortData('price')">价格 <span class="sort-indicator">↕</span></th>
-                <th onclick="sortData('weight')">重量 <span class="sort-indicator">↕</span></th>
-                <th onclick="sortData('ppk')">单价/kg <span class="sort-indicator">↕</span></th>
-            </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table>
-
-    <div id="tooltip" class="tooltip"></div>
-
-    <script>
-        // 默认数据
-        const DEFAULT_DATA = {}; // 清空默认数据
-        // 系统状态
-        const COLOR_PALETTE = ['#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFDFBA', '#D0BAFF'];
-        let monsterColors = {};
-        let currentData = [];
-        let sortState = { column: null, order: 0 };
-        let maxValues = { price: 0, weight: 0, ppk: 0 };
-        let itemSourceMap = {};
-        let lootData = {};
-        let merchantMultiplier = 1.0; // 默认商人倍率
-
-        // 初始化
-        async function init() {
-            await loadExternalData();
-            initializeData();
-            setupEventListeners();
-            updateView();
-        }
-        
-        // 新增数据加载函数
-        async function loadExternalData() {
-        try {
-            const RAW_URL = 'https://raw.githubusercontent.com/LXHuiMeng/WTLO-Tools/refs/heads/main/data.json';
-            const response = await fetch(RAW_URL);
-            lootData = await response.json();
-        } catch (error) {
-            console.error('数据加载失败:', error);
-            lootData = {}; // 可设置应急空数据
-        }
-        }
-
-        function initializeData() {
-            generateColorMap();
-            buildItemSourceMap();
-            processRawData();
-        }
-
-        function generateColorMap() {
-            let colorIndex = 0;
-            Object.keys(lootData).forEach(monster => {
-                monsterColors[monster] = COLOR_PALETTE[colorIndex % COLOR_PALETTE.length];
-                colorIndex++;
-            });
-        }
-
-        function buildItemSourceMap() {
-            itemSourceMap = {};
-            Object.entries(lootData).forEach(([monster, drops]) => {
-                drops.forEach(drop => {
-                    if (!itemSourceMap[drop.item]) {
-                        itemSourceMap[drop.item] = new Set();
-                    }
-                    itemSourceMap[drop.item].add(monster);
-                });
-            });
-        }
-
-        function processRawData() {
-            const mergedItems = {};
-            Object.entries(lootData).forEach(([monster, drops]) => {
-                drops.forEach(drop => {
-                    if (!mergedItems[drop.item]) {
-                        mergedItems[drop.item] = {
-                            item: drop.item,
-                            basePrice: [], // 保存原始价格
-                            price: [],
-                            weight: [],
-                            ppk: 0,
-                            monsters: new Set([monster]),
-                            display: true
-                        };
-                    } else {
-                        mergedItems[drop.item].monsters.add(monster);
-                    }
-                    mergedItems[drop.item].basePrice.push(drop.price);
-                    mergedItems[drop.item].weight.push(drop.weight);
-                });
-            });
-
-            // 计算带系数的价格
-            currentData = Object.values(mergedItems).map(item => {
-                const avgBasePrice = item.basePrice.reduce((a, b) => a + b, 0) / item.basePrice.length;
-                const avgWeight = item.weight.reduce((a, b) => a + b, 0) / item.weight.length;
-                const actualPrice = avgBasePrice * merchantMultiplier;
-                
-                return {
-                    ...item,
-                    price: Number(actualPrice.toFixed(2)),
-                    weight: Number(avgWeight.toFixed(2)),
-                    ppk: Number((actualPrice / avgWeight).toFixed(2))
-                };
-            });
-
-            calculateMaxValues();
-        }
-
-        function updatePrices() {
-            merchantMultiplier = parseFloat(document.getElementById('merchantSelect').value);
-            processRawData();
-            updateView();
-        }
-
-        function calculateMaxValues() {
-            maxValues = {
-                price: Math.max(...currentData.map(d => d.price)),
-                weight: Math.max(...currentData.map(d => d.weight)),
-                ppk: Math.max(...currentData.map(d => d.ppk))
-            };
-        }
-
-        function setupEventListeners() {
-            const searchInput = document.getElementById('searchInput');
-            searchInput.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                this.value = '';
-                this.dispatchEvent(new Event('input'));
-                updateAutocomplete.call(this);
-            });
-
-            searchInput.addEventListener('input', function() {
-                updateAutocomplete.call(this);
-                searchData();
-            });
-
-            searchInput.addEventListener('focus', () => updateAutocomplete.call(searchInput));
-            searchInput.addEventListener('blur', () => {
-                setTimeout(() => {
-                    document.getElementById('autocompleteList').style.display = 'none';
-                }, 100);
-            });
-
-            // 物品列悬停事件
-            document.addEventListener('mouseover', (e) => {
-                const itemCell = e.target.closest('td:first-child');
-                if (itemCell) {
-                    const item = itemCell.closest('tr').dataset.item;
-                    showTooltip(item, e);
-                }
-            });
-
-            document.addEventListener('mouseout', (e) => {
-                if (e.target.closest('td:first-child')) {
-                    hideTooltip();
-                }
-            });
-        }
-
-        // 新增的自动完成更新函数
-        function updateAutocomplete() {
-            const query = this.value.toLowerCase();
-            const list = document.getElementById('autocompleteList');
-            list.innerHTML = '';
-
-            // 当查询为空时显示全部数据
-            const allItems = [
-                ...Object.keys(lootData),
-                ...Object.keys(itemSourceMap).filter(i => !lootData[i]) // 排除重复的怪物名称
-            ].filter((v, i, a) => a.indexOf(v) === i);
-
-            const matches = query ? 
-                allItems.filter(item => item.toLowerCase().includes(query)) : 
-                allItems;
-
-            list.innerHTML = matches.map(item => `
-                <div class="autocomplete-item" onclick="selectSuggestion('${item}')">
-                    ${lootData[item] ? '怪物：' : '物品：'}${item}
+        <div class="nav-grid">
+            <div class="cyber-card">
+                <div class="card-content">
+                    <a href="LootHive-Bestiary/index.html">
+                        ▸ LOOT HIVE BESTIARY
+                        <br>
+                        <span style="font-size:0.8em;color:#bc13fe">生物图鉴数据库</span>
+                    </a>
                 </div>
-            `).join('');
+            </div>
 
-            list.style.display = 'none';
-            list.offsetHeight; // 触发重绘
-            list.style.display = matches.length ? 'block' : 'none';
-        }
-
-
-        // 点击搜索栏显示全部怪物
-        function showAllMonsters() {
-            const list = document.getElementById('autocompleteList');
-            list.innerHTML = Object.keys(lootData)
-                .sort()
-                .map(monster => `
-                    <div class="autocomplete-item" onclick="selectSuggestion('${monster}')">
-                        怪物：${monster}
-                    </div>
-                `).join('');
-            list.style.display = 'block';
-        }
-
-        function selectSuggestion(value) {
-            const searchInput = document.getElementById('searchInput');
-            searchInput.value = value;
-            searchInput.dispatchEvent(new Event('input')); // 触发输入事件
-            document.getElementById('autocompleteList').style.display = 'none';
-            
-            // 立即执行搜索
-            setTimeout(() => searchData(), 50); // 添加微小延迟确保输入更新
-        }
-
-
-        // 修改后的tooltip显示
-        function showTooltip(item, event) {
-            const tooltip = document.getElementById('tooltip');
-            const dataItem = currentData.find(d => d.item === item);
-            if (!dataItem) return;
-            
-            tooltip.innerHTML = `
-                <strong>${item}</strong><br>
-                掉落来源：${Array.from(dataItem.monsters)
-                    .map(m => `<span class="source-tag" style="background:${monsterColors[m]}">${m}</span>`)
-                    .join(' ')}
-            `;
-            tooltip.style.display = 'block';
-            tooltip.style.left = `${event.pageX + 15}px`;
-            tooltip.style.top = `${event.pageY + 15}px`;
-        }
-
-        function hideTooltip() {
-            document.getElementById('tooltip').style.display = 'none';
-        }
-
-        function searchData() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            currentData.forEach(item => {
-                const matchItem = item.item.toLowerCase().includes(query);
-                const matchMonster = Array.from(itemSourceMap[item.item] || [])
-                    .some(m => m.toLowerCase().includes(query));
-                item.display = matchItem || matchMonster;
-            });
-            updateView();
-        }
-
-        function resetView() {
-            processRawData();
-            document.getElementById('searchInput').value = '';
-            updateView();
-        }
-
-        function sortData(column) {
-            if (sortState.column === column) {
-                sortState.order = (sortState.order + 1) % 3;
-            } else {
-                sortState.order = 1;
-                sortState.column = column;
-            }
-
-            currentData.sort((a, b) => {
-                const modifier = sortState.order === 2 ? -1 : 1;
-                if (column === 'item') {
-                    return a[column].localeCompare(b[column]) * modifier;
-                }
-                return (a[column] - b[column]) * modifier;
-            });
-
-            if (sortState.order === 0) {
-                processRawData();
-                sortState.column = null;
-            }
-            updateView();
-        }
-
-        function updateView() {
-            const tbody = document.getElementById('tableBody');
-            tbody.style.opacity = 0; // 先隐藏表格
-            
-            // 使用requestAnimationFrame优化动画
-            requestAnimationFrame(() => {
-                tbody.innerHTML = '';
-                
-                currentData.filter(item => item.display).forEach((item, index) => {
-                    const row = document.createElement('tr');
-                    row.dataset.item = item.item;
-                    row.className = 'sorting-animation';
-                    row.style.animationDelay = `${index * 0.05}s`; // 行级联动画效果
-
-                    row.innerHTML = `
-                    <td>
-                        <div>${item.item}</div>
-                        <div>${Array.from(item.monsters)
-                            .map(monster => `<span class="source-tag" style="background:${monsterColors[monster]}">${monster}</span>`)
-                            .join('')}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="progress-container">
-                            ${sortState.column === 'price' ? 
-                                `<div class="progress-bar" style="width:${(item.price/maxValues.price*100).toFixed(1)}%"></div>` 
-                                : ''}
-                            <span class="progress-text">${item.price}</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="progress-container">
-                            ${sortState.column === 'weight' ? 
-                                `<div class="progress-bar" style="width:${(item.weight/maxValues.weight*100).toFixed(1)}%"></div>` 
-                                : ''}
-                            <span class="progress-text">${item.weight}</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="progress-container">
-                            ${sortState.column === 'ppk' ? 
-                                `<div class="progress-bar" style="width:${(item.ppk/maxValues.ppk*100).toFixed(1)}%"></div>` 
-                                : ''}
-                            <span class="progress-text">${item.ppk.toFixed(2)}</span>
-                        </div>
-                    </td>
-                `;
-
-                    tbody.appendChild(row);
-                });
-
-                tbody.style.opacity = 1;
-                updateSortIndicators();
-                
-            });
-        }
-
-        // 修改后的排序指示器更新
-        function updateSortIndicators() {
-            document.querySelectorAll('th').forEach(th => {
-                const indicator = th.querySelector('.sort-indicator');
-                const column = th.getAttribute('onclick').match(/'([^']+)'/)[1];
-                if (column === sortState.column) {
-                    indicator.textContent = ['↕', '↑', '↓'][sortState.order];
-                } else {
-                    indicator.textContent = '↕';
-                }
-            });
-        }
-
-        // 初始化
-        init();
-    </script>
+            <div class="cyber-card">
+                <div class="card-content">
+                    <a href="CraftFlow-Guide/index.html">
+                        ▸ CRAFTFLOW GUIDE
+                        <br>
+                        <span style="font-size:0.8em;color:#bc13fe">合成系统指南</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
