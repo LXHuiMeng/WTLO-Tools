@@ -1,0 +1,35 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>星际制造计算器</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="cyber-container">
+        <div class="hologram-panel">
+            <h3 class="cyber-title">⟁ 生产订单</h3>
+            <div class="cyber-input-group">
+                <input type="text" id="itemName" class="cyber-input" placeholder="▣ 输入物品名称..." data-glitch-text>
+                <div id="suggestions" class="cyber-suggestions"></div>
+                <input type="number" id="itemQuantity" value="1" min="1" class="cyber-input">
+                <button class="cyber-button" onclick="addOrderItem()">+ 量子添加</button>
+            </div>
+            <div id="orderList" class="cyber-list"></div>
+        </div>
+
+        <div class="hologram-panel">
+            <h3 class="cyber-title">⟁ 材料矩阵</h3>
+            <div id="materialList" class="particle-grid"></div>
+        </div>
+    </div>
+
+    <script src=" js/script.js"></script>
+    <div class="cyber-grid"></div>
+    <div class="scanline"></div>
+</body>
+
+</html>
