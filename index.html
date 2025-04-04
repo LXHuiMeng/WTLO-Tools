@@ -236,65 +236,22 @@
 
         // 初始化
         async function init() {
-            await loadExternalData(); // 新增此行
-            loadSavedData();
-            setupEventListeners();
+            await loadExternalData(); // 只加载外部数据
             initializeData();
+            setupEventListeners();
             updateView();
         }
         
         // 新增数据加载函数
         async function loadExternalData() {
-            try {
-                const response = await fetch('data.json');
-                lootData = await response.json();
-            } catch (error) {
-                console.error('加载data.json失败，使用默认数据');
-                lootData = { /* 可保留少量默认数据 */ };
-            }
+        try {
+            const RAW_URL = 'https://github.com/LXHuiMeng/WTLO-Tools/blob/b9125cb2f958168c76a6336524933bcfcfe7ce50/data.json';
+            const response = await fetch(RAW_URL);
+            lootData = await response.json();
+        } catch (error) {
+            console.error('数据加载失败:', error);
+            lootData = {}; // 可设置应急空数据
         }
-
-        async function loadSavedData() {
-            // 方案1：使用GitHub Pages托管（推荐）
-            const GITHUB_PAGES_URL = "https://github.com/LXHuiMeng/WTLO-Tools/blob/ea99b5e810149536b9639300b950ecdb04dbc279/data.json";
-            
-            // 方案2：使用CORS代理服务（备选）
-            const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
-            const RAW_GITHUB_URL = "https://github.com/LXHuiMeng/WTLO-Tools/blob/ea99b5e810149536b9639300b950ecdb04dbc279/data.json";
-
-            try {
-                // 优先尝试GitHub Pages
-                let response = await fetch(GITHUB_PAGES_URL, {
-                    cache: "no-cache" // 跳过浏览器缓存
-                });
-                
-                // 如果失败尝试代理方案
-                if (!response.ok) {
-                    response = await fetch(PROXY_URL + RAW_GITHUB_URL, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest' // 某些代理需要
-                        }
-                    });
-                }
-
-                // 处理响应
-                if (response.ok) {
-                    lootData = await response.json();
-                    localStorage.setItem('lootData', JSON.stringify(lootData));
-                    console.log("远程数据加载成功");
-                    
-                    // 显示更新时间
-                    const lastModified = response.headers.get('last-modified') || new Date().toUTCString();
-                    document.getElementById('updateTime').textContent = 
-                        new Date(lastModified).toLocaleString();
-                } else {
-                    throw new Error('远程数据加载失败');
-                }
-            } catch (error) {
-                console.warn('使用本地缓存数据:', error);
-                const savedData = localStorage.getItem('lootData');
-                lootData = savedData ? JSON.parse(savedData) : {...DEFAULT_DATA};
-            }
         }
 
         function initializeData() {
