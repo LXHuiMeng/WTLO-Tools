@@ -241,17 +241,14 @@
         
         // 新增数据加载函数
         async function loadExternalData() {
-            try {
-                // 修改为本地相对路径
-                const response = await fetch('./database/biome-drops.json');
-                if (!response.ok) throw new Error('网络响应异常');
-                lootData = await response.json();
-            } catch (error) {
-                console.error('数据加载失败:', error);
-                lootData = {};
-                // 可添加UI提示
-                alert('无法加载本地数据文件，请检查路径配置');
-            }
+        try {
+            const RAW_URL = 'https://raw.githubusercontent.com/LXHuiMeng/WTLO-Tools/refs/heads/main/LootHive-Bestiary/database/biome-drops.json';
+            const response = await fetch(RAW_URL);
+            lootData = await response.json();
+        } catch (error) {
+            console.error('数据加载失败:', error);
+            lootData = {}; // 可设置应急空数据
+        }
         }
 
         function initializeData() {
@@ -281,19 +278,19 @@
         }
 
         function processRawData() {
-            
             const mergedItems = {};
             Object.entries(lootData).forEach(([monster, drops]) => {
-                // 添加数据校验
-                if (!Array.isArray(drops)) {
-                    console.warn(`无效的掉落数据格式: ${monster}`);
-                    return;
-                }
                 drops.forEach(drop => {
-                    // 必需字段校验
-                    if (!drop.item || typeof drop.price !== 'number' || typeof drop.weight !== 'number') {
-                        console.warn(`无效的物品数据格式: ${monster} -> ${JSON.stringify(drop)}`);
-                        return;
+                    if (!mergedItems[drop.item]) {
+                        mergedItems[drop.item] = {
+                            item: drop.item,
+                            basePrice: [], // 保存原始价格
+                            price: [],
+                            weight: [],
+                            ppk: 0,
+                            monsters: new Set([monster]),
+                            display: true
+                        };
                     } else {
                         mergedItems[drop.item].monsters.add(monster);
                     }
@@ -551,17 +548,6 @@
                     indicator.textContent = '↕';
                 }
             });
-        }
-
-        function initializeData() {
-            try {
-                generateColorMap();
-                buildItemSourceMap();
-                processRawData();
-            } catch (error) {
-                console.error('数据初始化失败:', error);
-                alert('数据初始化失败，请检查数据格式');
-            }
         }
 
         // 初始化
