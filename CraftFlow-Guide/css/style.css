@@ -1,0 +1,366 @@
+/* style.css */
+:root {
+    --neon-blue: #00f3ff;
+    --neon-purple: #a855f7;
+    --deep-space: #0a0a16;
+    --cyber-black: #111119;
+    --hologram-glow: radial-gradient(circle at center,
+            rgba(0, 243, 255, 0.2) 0%,
+            transparent 70%);
+}
+
+body {
+    background: var(--deep-space);
+    color: rgba(255, 255, 255, 0.95);
+    font-family: 'Segoe UI', system-ui;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.cyber-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 20px;
+    min-height: 100vh;
+    background-image:
+        linear-gradient(45deg, rgba(168, 85, 247, 0.05) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(0, 243, 255, 0.05) 25%, transparent 25%);
+    background-size: 60px 60px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    height: calc(100vh - 40px);
+    box-sizing: border-box;
+}
+
+.hologram-panel {
+    background: rgba(17, 17, 25, 0.95);
+    border: 1px solid var(--neon-blue);
+    border-radius: 8px;
+    padding: 1.5rem;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    height: 100%;
+}
+
+@keyframes scrollGlow {
+    0% {
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    }
+
+    100% {
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0);
+    }
+}
+
+.scroll-active {
+    animation: scrollGlow 1.5s ease-in-out;
+}
+
+.hologram-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--hologram-glow);
+    pointer-events: none;
+}
+
+.cyber-title {
+    color: var(--neon-blue);
+    font-weight: 500;
+    margin: 0 0 1.5rem;
+    text-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    position: relative;
+    padding-left: 1rem;
+}
+
+.cyber-title::before {
+    position: absolute;
+    left: -1.2rem;
+    filter: drop-shadow(0 0 5px var(--neon-blue));
+}
+
+.cyber-input-group {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 0.8rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1001;
+    /* 确保在全局点击之上 */
+}
+
+.cyber-input {
+    background: rgba(0, 0, 30, 0.8);
+    border: 1px solid var(--neon-purple);
+    color: white;
+    padding: 0.8rem;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+}
+
+@keyframes inputGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(168,85,247,0); }
+    50% { box-shadow: 0 0 15px rgba(168,85,247,0.3); }
+}
+
+.cyber-input:focus {
+    outline: none;
+    border-color: var(--neon-purple);
+    animation: inputGlow 1.5s infinite;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+}
+
+.cyber-button {
+    background: linear-gradient(45deg, var(--neon-purple), var(--neon-blue));
+    border: none;
+    color: black;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+    transition: filter 0.3s ease;
+}
+
+.cyber-button:hover {
+    filter: brightness(1.2) drop-shadow(0 0 5px var(--neon-blue));
+}
+
+.cyber-list {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem;
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    position: relative;
+}
+
+.delete-btn {
+    color: #ff467e;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.delete-btn:hover {
+    transform: scale(1.2);
+}
+
+.particle-grid {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.material-item {
+    padding: 1rem;
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid rgba(0, 243, 255, 0.1);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.material-item:hover {
+    background: rgba(0, 243, 255, 0.1);
+    transform: translateX(10px);
+}
+
+.material-item::before {
+    content: '◈';
+    position: absolute;
+    left: -15px;
+    color: var(--neon-blue);
+    filter: drop-shadow(0 0 5px var(--neon-blue));
+}
+
+.cyber-suggestions {
+    position: absolute;
+    background: var(--cyber-black);
+    border: 1px solid var(--neon-purple);
+    z-index: 1000;
+    overflow: hidden;
+    top: 100%;
+    /* 紧贴输入框底部 */
+    left: 0;
+    width: calc(100% - 2px);
+    /* 边框对齐 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: none;
+    /* 初始隐藏状态 */
+    transform-origin: top;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    /* 与输入框形成连续视觉 */
+    padding-bottom: 5px;
+    /* 补偿隐藏的滚动条空间 */
+    max-height: 200px;
+    /* 舒适高度 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    transition: transform 0.3s ease-out;
+    animation: slideIn 0.2s ease-out;
+}
+
+.cyber-suggestions:hover {
+    overflow-y: auto;
+    /* 仅在实际需要时激活 */
+}
+
+@keyframes suggestAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body,
+.cyber-suggestions {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+body::-webkit-scrollbar,
+
+.cyber-suggestions::-webkit-scrollbar {
+    display: none;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.suggestion-item {
+    border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+    font-size: 0.95em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 12px 15px;
+    margin: 0 5px;
+    transition: transform 0.2s ease;
+}
+
+/* 添加点击反馈动画 */
+#itemName:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+}
+
+.suggestion-item:hover {
+    transform: translateX(5px);
+    /* 悬停动画效果 */
+    overflow-x: hidden;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(0, 243, 255, 0.1) 70%);
+}
+
+@keyframes scanline {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(100%);
+    }
+}
+
+.cyber-grid {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg,
+            transparent 0px,
+            transparent 1px,
+            rgba(0, 243, 255, 0.03) 2px);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.quantum-empty {
+    text-align: center;
+    color: rgba(0, 243, 255, 0.5);
+    padding: 2rem;
+}
+
+.group-title {
+    color: var(--neon-purple);
+    border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.quantum-marker {
+    margin-left: auto;
+    background: rgba(168, 85, 247, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.quantum-tree-container:active {
+    cursor: grabbing;
+}
+
+.scanline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            transparent 50%,
+            rgba(0, 243, 255, 0.1) 51%,
+            transparent 52%);
+    animation: scanline 3s linear infinite;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.hologram-panel {
+    position: relative;
+    /* 确保关闭按钮定位正确 */
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+.suggestion-item.selected {
+    background: linear-gradient(90deg, 
+        rgba(0, 243, 255, 0.15) 0%,
+        transparent 100%
+    );
+    border-left: 2px solid var(--neon-blue);
+}
