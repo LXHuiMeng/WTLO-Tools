@@ -245,7 +245,7 @@
         // 新增数据加载函数
         async function loadExternalData() {
         try {
-            const RAW_URL = 'https://github.com/LXHuiMeng/WTLO-Tools/blob/b9125cb2f958168c76a6336524933bcfcfe7ce50/data.json';
+            const RAW_URL = 'https://raw.githubusercontent.com/LXHuiMeng/WTLO-Tools/refs/heads/main/data.json';
             const response = await fetch(RAW_URL);
             lootData = await response.json();
         } catch (error) {
