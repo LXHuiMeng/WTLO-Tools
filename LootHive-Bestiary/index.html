@@ -242,7 +242,7 @@
         // 新增数据加载函数
         async function loadExternalData() {
         try {
-            const RAW_URL = 'https://raw.githubusercontent.com/LXHuiMeng/WTLO-Tools/refs/heads/main/data.json';
+            const RAW_URL = 'https://raw.githubusercontent.com/LXHuiMeng/WTLO-Tools/refs/heads/main/LootHive-Bestiary/database/biome-drops.json';
             const response = await fetch(RAW_URL);
             lootData = await response.json();
         } catch (error) {
