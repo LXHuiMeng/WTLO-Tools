@@ -96,11 +96,6 @@
             max-width: 300px;
             display: none;
         }
-        .data-management {
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-        }
         .file-input {
             position: relative;
             overflow: hidden;
@@ -161,7 +156,14 @@
                 transform: rotateX(0deg);
             }
         }
-
+        .merchant-select {
+            padding: 10px;
+            border: 2px solid #3498db;
+            border-radius: 4px;
+            background: white;
+            color: #2c3e50;
+            margin-left: 10px;
+        }
         tr {
             transition: all 0.3s ease;
             transform-style: preserve-3d;
@@ -188,21 +190,17 @@
 </head>
 <body>
     <h1>怪物掉落表系统</h1>
-    
-    <div class="data-management">
-        <div class="file-input">
-            <button>导入数据</button>
-            <input type="file" id="fileInput" accept=".json">
-        </div>
-        <button onclick="exportData()">导出数据</button>
-        <button onclick="resetToDefault()">恢复默认</button>
-    </div>
 
     <div class="controls">
         <div style="position:relative;">
             <input type="text" id="searchInput" placeholder="搜索怪物或物品..." autocomplete="off">
             <div id="autocompleteList" class="autocomplete-items"></div>
         </div>
+        <select id="merchantSelect" class="merchant-select" onchange="updatePrices()">
+            <option value="1.0">普通商人 (1.0x)</option>
+            <option value="0.9">黑市商人 (0.9x)</option>
+            <option value="0.75">官方回收 (0.75x)</option>
+        </select>
         <button onclick="searchData()">搜索</button>
         <button onclick="resetView()">重置视图</button>
     </div>
@@ -232,11 +230,11 @@
         let maxValues = { price: 0, weight: 0, ppk: 0 };
         let itemSourceMap = {};
         let lootData = {};
-
+        let merchantMultiplier = 1.0; // 默认商人倍率
 
         // 初始化
         async function init() {
-            await loadExternalData(); // 只加载外部数据
+            await loadExternalData();
             initializeData();
             setupEventListeners();
             updateView();
@@ -281,41 +279,49 @@
         }
 
         function processRawData() {
-        const mergedItems = {};
-        Object.entries(lootData).forEach(([monster, drops]) => {
-            drops.forEach(drop => {
-                if (!mergedItems[drop.item]) {
-                    mergedItems[drop.item] = {
-                        item: drop.item,
-                        price: [], // 改为数组记录所有值
-                        weight: [],
-                        ppk: 0,
-                        monsters: new Set([monster]),
-                        display: true
-                    };
-                } else {
-                    mergedItems[drop.item].monsters.add(monster);
-                }
-                // 收集所有价格和重量
-                mergedItems[drop.item].price.push(drop.price);
-                mergedItems[drop.item].weight.push(drop.weight);
+            const mergedItems = {};
+            Object.entries(lootData).forEach(([monster, drops]) => {
+                drops.forEach(drop => {
+                    if (!mergedItems[drop.item]) {
+                        mergedItems[drop.item] = {
+                            item: drop.item,
+                            basePrice: [], // 保存原始价格
+                            price: [],
+                            weight: [],
+                            ppk: 0,
+                            monsters: new Set([monster]),
+                            display: true
+                        };
+                    } else {
+                        mergedItems[drop.item].monsters.add(monster);
+                    }
+                    mergedItems[drop.item].basePrice.push(drop.price);
+                    mergedItems[drop.item].weight.push(drop.weight);
+                });
             });
-        });
 
-        // 计算平均值
-        currentData = Object.values(mergedItems).map(item => {
-            const avgPrice = item.price.reduce((a, b) => a + b, 0) / item.price.length;
-            const avgWeight = item.weight.reduce((a, b) => a + b, 0) / item.weight.length;
-            return {
-                ...item,
-                price: Number(avgPrice.toFixed(2)),
-                weight: Number(avgWeight.toFixed(2)),
-                ppk: Number((avgPrice / avgWeight).toFixed(2))
-            };
-        });
+            // 计算带系数的价格
+            currentData = Object.values(mergedItems).map(item => {
+                const avgBasePrice = item.basePrice.reduce((a, b) => a + b, 0) / item.basePrice.length;
+                const avgWeight = item.weight.reduce((a, b) => a + b, 0) / item.weight.length;
+                const actualPrice = avgBasePrice * merchantMultiplier;
+                
+                return {
+                    ...item,
+                    price: Number(actualPrice.toFixed(2)),
+                    weight: Number(avgWeight.toFixed(2)),
+                    ppk: Number((actualPrice / avgWeight).toFixed(2))
+                };
+            });
 
-        calculateMaxValues();
-    }
+            calculateMaxValues();
+        }
+
+        function updatePrices() {
+            merchantMultiplier = parseFloat(document.getElementById('merchantSelect').value);
+            processRawData();
+            updateView();
+        }
 
         function calculateMaxValues() {
             maxValues = {
@@ -326,25 +332,19 @@
         }
 
         function setupEventListeners() {
-            // 文件操作
-            document.getElementById('fileInput').addEventListener('change', handleFileSelect);
-            
-            // 搜索栏事件
             const searchInput = document.getElementById('searchInput');
-            // 新增右键清空事件
             searchInput.addEventListener('contextmenu', function(e) {
                 e.preventDefault();
                 this.value = '';
-                this.dispatchEvent(new Event('input')); // 触发input事件
+                this.dispatchEvent(new Event('input'));
                 updateAutocomplete.call(this);
             });
-
-
 
             searchInput.addEventListener('input', function() {
                 updateAutocomplete.call(this);
-                searchData(); // 新增：输入变化时立即执行搜索
+                searchData();
             });
+            
             searchInput.addEventListener('focus', () => updateAutocomplete.call(searchInput));
             searchInput.addEventListener('blur', () => {
                 setTimeout(() => {
@@ -439,43 +439,6 @@
 
         function hideTooltip() {
             document.getElementById('tooltip').style.display = 'none';
-        }
-
-        // 以下保持原有功能不变（处理文件、导出、排序等）...
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    lootData = JSON.parse(e.target.result);
-                    localStorage.setItem('lootData', JSON.stringify(lootData));
-                    location.reload();
-                } catch {
-                    alert('无效的JSON文件');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function exportData() {
-            const dataStr = JSON.stringify(lootData, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'loot-data.json';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function resetToDefault() {
-            if (confirm('确定要恢复默认数据吗？')) {
-                localStorage.removeItem('lootData');
-                location.reload();
-            }
         }
 
         function searchData() {
