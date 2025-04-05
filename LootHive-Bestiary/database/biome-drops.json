@@ -7,7 +7,7 @@
         { "item": "聚合物", "price": 25, "weight": 0.075 },
         { "item": "太阳蜘蛛腿", "price": 165, "weight": 0.6 },
         { "item": "贵金属", "price": 100, "weight": 0.5 },
-        { "item": "贵金属", "price": 50, "weight": 0.3 },
+        { "item": "有色金属", "price": 50, "weight": 0.3 },
         { "item": "硫", "price": 15, "weight": 0.15 },
         { "item": "铅", "price": 1.5, "weight": 0.05 },
         { "item": "太阳蜘蛛肉", "price": 308, "weight": 0.62 }
