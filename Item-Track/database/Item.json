@@ -1,0 +1,117 @@
+[
+    {
+      "name": "太阳蜘蛛腺",
+      "price": 1922,
+      "weight": 0.156
+    },
+    {
+      "name": "太阳蜘蛛生物材料",
+      "price": 329,
+      "weight": 0.125
+    },
+    {
+      "name": "太阳蜘蛛胃",
+      "price": 1350,
+      "weight": 0.6
+    },
+    {
+      "name": "太阳蜘蛛爪",
+      "price": 295,
+      "weight": 0.74
+    },
+    {
+      "name": "聚合物",
+      "price": 25,
+      "weight": 0.075
+    },
+    {
+      "name": "太阳蜘蛛腿",
+      "price": 165,
+      "weight": 0.6
+    },
+    {
+      "name": "贵金属",
+      "price": 100,
+      "weight": 0.5
+    },
+    {
+      "name": "有色金属",
+      "price": 50,
+      "weight": 0.3
+    },
+    {
+      "name": "硫",
+      "price": 15,
+      "weight": 0.15
+    },
+    {
+      "name": "铅",
+      "price": 1.5,
+      "weight": 0.05
+    },
+    {
+      "name": "太阳蜘蛛肉",
+      "price": 308,
+      "weight": 0.62
+    },
+    {
+      "name": "大熊的生物材料",
+      "price": 80,
+      "weight": 0.1
+    },
+    {
+      "name": "腐烂熊肉",
+      "price": 100,
+      "weight": 0.8
+    },
+    {
+      "name": "腐烂熊胸骨",
+      "price": 90,
+      "weight": 0.8
+    },
+    {
+      "name": "大熊胆汁",
+      "price": 500,
+      "weight": 0.15
+    },
+    {
+      "name": "腐烂熊肝",
+      "price": 50,
+      "weight": 0.55
+    },
+    {
+      "name": "熊肝",
+      "price": 220,
+      "weight": 0.8
+    },
+    {
+      "name": "熊肉",
+      "price": 350,
+      "weight": 1.4
+    },
+    {
+      "name": "熊胸骨",
+      "price": 280,
+      "weight": 0.86
+    },
+    {
+      "name": "熊外皮",
+      "price": 525,
+      "weight": 6.5
+    },
+    {
+      "name": "大熊爪子",
+      "price": 120,
+      "weight": 0.25
+    },
+    {
+      "name": "大熊心脏",
+      "price": 380,
+      "weight": 1.9
+    },
+    {
+      "name": "熊头",
+      "price": 1800,
+      "weight": 16.4
+    }
+  ]
