@@ -1,0 +1,183 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f8f9fa;
+}
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: var(--table-bg);
+    border-radius: 12px; /* 新增圆角 */
+    overflow: hidden; /* 隐藏边角 */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    text-align: center;
+}
+th {
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+th:hover {
+    background-color: #2980b9;
+}
+tr:hover {
+    background-color: #f6f6f6;
+}
+.source-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    margin: 0.25rem 0.5rem 0.25rem 0;
+    border-radius: 999px;
+    font-size: 0.85em;
+    font-weight: 500;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
+    transition: transform 0.1s ease;
+}
+
+.source-tag:hover {
+    transform: translateY(-1px);
+}
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+#searchInput {
+    flex: 1;
+    padding: 10px;
+    max-width: 400px;
+    border: 2px solid #3498db;
+    border-radius: 4px;
+    outline: none;
+}
+button {
+    padding: 10px 20px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+button:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+}
+.sort-indicator {
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+.tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 100;
+    max-width: 300px;
+    display: none;
+}
+.file-input {
+    position: relative;
+    overflow: hidden;
+}
+.file-input input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+.autocomplete-items {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 400px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 100;
+    display: none;
+}
+.autocomplete-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.autocomplete-item:hover {
+    background: #f5f5f5;
+}
+.progress-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+.progress-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: rgba(52, 152, 219, 0.2);
+    z-index: 0;
+    transition: width 0.3s;
+}
+.progress-text {
+    position: relative;
+    z-index: 1;
+}
+@keyframes rowFlipIn {
+    from {
+        opacity: 0;
+        transform: rotateX(-90deg);
+    }
+    to {
+        opacity: 1;
+        transform: rotateX(0deg);
+    }
+}
+.merchant-select {
+    padding: 10px;
+    border: 2px solid #3498db;
+    border-radius: 4px;
+    background: white;
+    color: #2c3e50;
+    margin-left: 10px;
+}
+tr {
+    transition: all 0.3s ease;
+    transform-style: preserve-3d;
+    position: relative;
+}
+tbody tr:hover {
+    transform: perspective(1000px) rotateX(5deg) translateZ(15px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+
+/* 表头保持原有效果 */
+th:hover {
+    background-color: #2980b9 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.sorting-animation {
+    animation: rowFlipIn 0.5s ease-out;
+}
